@@ -115,6 +115,16 @@ int reflecty(int y)
   return reflect(y, ydim);
 }
 
+int xtoy(int x)
+{
+  return (ydim * x) / xdim;
+}
+
+int ytox(int y)
+{
+  return (xdim * y) / ydim;
+}
+
 void myline(int x1, int y1, int x2, int y2)
 {
   int a1, b1, a2, b2;
@@ -128,6 +138,11 @@ void myline(int x1, int y1, int x2, int y2)
   line(a1, y1, a2, y2);
   line(x1, b1, x2, b2);
   line(a1, b1, a2, b2);
+  
+  line(ytox(y1), xtoy(x1), ytox(y2), xtoy(x2));
+  line(ytox(y1), xtoy(a1), ytox(y2), xtoy(a2));
+  line(ytox(b1), xtoy(x1), ytox(b2), xtoy(x2));
+  line(ytox(b1), xtoy(a1), ytox(b2), xtoy(a2));
 }
 
 void draw()
