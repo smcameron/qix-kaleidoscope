@@ -22,17 +22,20 @@
 
 final int nlines = 3;
 int[] x1,y1,x2, y2;
+float[] ang;
 int vx1, vy1, vx2, vy2;
 int xdim, ydim;
 int i;
 int r, g, b;
 color linecolor;
 int colorangle;
+float angle;
+float anglevel;
 
 void setup()
 {
   i = 0;
-  xdim = 1000;
+  xdim = 700;
   ydim = 700;
   size(xdim, ydim);
   stroke(255);
@@ -42,12 +45,14 @@ void setup()
   y1 = new int[nlines];
   x2 = new int[nlines];
   y2 = new int[nlines];
+  ang = new float[nlines];
   
   for (i = 0; i < nlines; i++) {
     x1[i] = 0;
     y1[i] = 0;
     x2[i] = 0;
     y2[i] = 0;
+    ang[i] = 0.0;
   }
   i = 0;
 
@@ -58,10 +63,29 @@ void setup()
   r = 255;
   g = 255;
   b = 255;
+  angle = 0;
+  anglevel = 10;
   
   linecolor = color(r, g, b);
 }
 
+void dorotate()
+{
+  angle = (angle + anglevel);
+  if (angle > 360)
+     angle -= 360;
+  if (angle < 0)
+    angle += 360;
+    
+    if (random(100) < 20) {
+        anglevel = anglevel + ((random(100) - 50) / 100.0) * 3 * PI / 180.0;
+        if (anglevel < -20 * PI / 180.0)
+          anglevel = -20 * PI / 180.0;
+        if (anglevel > 20 * PI / 180.0)
+          anglevel = 20 * PI / 180.0;
+    }
+}
+  
 int update_color(float phase)
 {
   float ca;
@@ -125,7 +149,35 @@ int ytox(int y)
   return (xdim * y) / ydim;
 }
 
-void myline(int x1, int y1, int x2, int y2)
+int xrot(int x, int y, float angle)
+{
+  int ox = xdim / 2;
+  int oy = ydim / 2;
+  
+  return (int) (cos(angle) * (x - ox) - sin(angle) * (y - oy) + ox);
+}
+
+int yrot(int x, int y, float angle)
+{
+  int ox = xdim / 2;
+  int oy = ydim / 2;
+  
+  return (int) (sin(angle) * (x - ox) + cos(angle) * (y - oy) + oy);
+}
+
+void rotline(int x1, int y1, int x2, int y2, float a)
+{
+  int a1, b1, a2, b2;
+
+  a1 = xrot(x1, y1, a);
+  b1 = yrot(x1, y1, a);
+  a2 = xrot(x2, y2, a);
+  b2 = yrot(x2, y2, a);
+  
+  line(a1, b1, a2, b2);
+}
+
+void myline(int x1, int y1, int x2, int y2, float a)
 {
   int a1, b1, a2, b2;
   
@@ -134,15 +186,15 @@ void myline(int x1, int y1, int x2, int y2)
   b1 = reflecty(y1);
   b2 = reflecty(y2);
   
-  line(x1, y1, x2, y2);
-  line(a1, y1, a2, y2);
-  line(x1, b1, x2, b2);
-  line(a1, b1, a2, b2);
+  rotline(x1, y1, x2, y2, a);
+  rotline(a1, y1, a2, y2, a);
+  rotline(x1, b1, x2, b2, a);
+  rotline(a1, b1, a2, b2, a);
   
-  line(ytox(y1), xtoy(x1), ytox(y2), xtoy(x2));
-  line(ytox(y1), xtoy(a1), ytox(y2), xtoy(a2));
-  line(ytox(b1), xtoy(x1), ytox(b2), xtoy(x2));
-  line(ytox(b1), xtoy(a1), ytox(b2), xtoy(a2));
+  rotline(ytox(y1), xtoy(x1), ytox(y2), xtoy(x2), a);
+  rotline(ytox(y1), xtoy(a1), ytox(y2), xtoy(a2), a);
+  rotline(ytox(b1), xtoy(x1), ytox(b2), xtoy(x2), a);
+  rotline(ytox(b1), xtoy(a1), ytox(b2), xtoy(a2), a);
 }
 
 void draw()
@@ -155,15 +207,17 @@ void draw()
    x2[n] = update_pos(x2[i], vx2);
    y1[n] = update_pos(y1[i], vy1);
    y2 [n]= update_pos(y2[i], vy2);
+   ang[n] = angle * PI / 180.0;
    vx1 = update_vel(vx1, x1[n], xdim);
    vx2 = update_vel(vx2, x2[n], xdim);
    vy1 = update_vel(vy1, y1[n], ydim);
    vy2 = update_vel(vy2, y2[n], ydim);
    update_linecolor();
    stroke(linecolor);
-   myline(x1[i], y1[i], x2[i], y2[i]);
+   myline(x1[i], y1[i], x2[i], y2[i], ang[i]);
    n = (n + 1) % nlines;
    stroke(0);
-   myline(x1[n], y1[n], x2[n], y2[n]);
+   myline(x1[n], y1[n], x2[n], y2[n], ang[n]);
    i = (i + 1) % nlines;  
+   dorotate();
 }
