@@ -25,6 +25,9 @@ int[] x1,y1,x2, y2;
 int vx1, vy1, vx2, vy2;
 int xdim, ydim;
 int i;
+int r, g, b;
+color linecolor;
+int colorangle;
 
 void setup()
 {
@@ -52,10 +55,38 @@ void setup()
   vy1 = 2;
   vx2 = 2;
   vy2 = 4;
+  r = 255;
+  g = 255;
+  b = 255;
+  
+  linecolor = color(r, g, b);
+}
+
+int update_color(float phase)
+{
+  float ca;
+
+  ca = colorangle * PI / 180.0;
+  
+  return ((int) (256 * sin(ca + phase))) % 256;
+}
+
+void update_linecolor()
+{
+  if (random(100) < 15)
+     colorangle = (colorangle + (int) (random(7) - 3)) % 360;
+    
+  r = update_color(0);
+  g = update_color(2.0 * PI / 3.0);
+  b = update_color(4.0 * PI / 3.0);
+  linecolor = color(r, g, b);
 }
 
 int update_vel(int v, int p, int limit)
 {
+  if (random(1000) < 20) {
+    v += (random(5) - 2);
+  }
   if (p < 0 || p > limit)
     return -v;
   return v;
@@ -113,7 +144,8 @@ void draw()
    vx2 = update_vel(vx2, x2[n], xdim);
    vy1 = update_vel(vy1, y1[n], ydim);
    vy2 = update_vel(vy2, y2[n], ydim);
-   stroke(255);
+   update_linecolor();
+   stroke(linecolor);
    myline(x1[i], y1[i], x2[i], y2[i]);
    n = (n + 1) % nlines;
    stroke(0);
