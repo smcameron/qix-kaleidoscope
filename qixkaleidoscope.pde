@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-final int nlines = 100;
+final int nlines = 3;
 int[] x1,y1,x2, y2;
 int vx1, vy1, vx2, vy2;
 int xdim, ydim;
@@ -29,8 +29,8 @@ int i;
 void setup()
 {
   i = 0;
-  xdim = 800;
-  ydim = 500;
+  xdim = 1000;
+  ydim = 700;
   size(xdim, ydim);
   stroke(255);
   background(0);
