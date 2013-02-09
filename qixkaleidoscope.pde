@@ -20,11 +20,6 @@
  * SOFTWARE.
  */
 
-/* 
- * This implements a simple "Qix monster" - two points moving, with a line
- * drawn between them, trailing lines behind, bouncing off the walls.
- */
-
 final int nlines = 100;
 int[] x1,y1,x2, y2;
 int vx1, vy1, vx2, vy2;
@@ -71,6 +66,39 @@ int update_pos(int p, int v)
   return p + v;
 }
 
+int reflect(int v, int vlimit)
+{
+  int c = vlimit / 2;
+  if (v > c)
+    return c - (v - c);
+  return c + (c - v);
+}
+
+int reflectx(int x)
+{
+  return reflect(x, xdim);
+}
+
+int reflecty(int y)
+{
+  return reflect(y, ydim);
+}
+
+void myline(int x1, int y1, int x2, int y2)
+{
+  int a1, b1, a2, b2;
+  
+  a1 = reflectx(x1);
+  a2 = reflectx(x2);
+  b1 = reflecty(y1);
+  b2 = reflecty(y2);
+  
+  line(x1, y1, x2, y2);
+  line(a1, y1, a2, y2);
+  line(x1, b1, x2, b2);
+  line(a1, b1, a2, b2);
+}
+
 void draw()
 {
    int n;
@@ -86,9 +114,9 @@ void draw()
    vy1 = update_vel(vy1, y1[n], ydim);
    vy2 = update_vel(vy2, y2[n], ydim);
    stroke(255);
-   line(x1[i], y1[i], x2[i], y2[i]);
+   myline(x1[i], y1[i], x2[i], y2[i]);
    n = (n + 1) % nlines;
    stroke(0);
-   line(x1[n], y1[n], x2[n], y2[n]);
+   myline(x1[n], y1[n], x2[n], y2[n]);
    i = (i + 1) % nlines;  
 }
