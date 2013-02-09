@@ -28,16 +28,17 @@ int xdim, ydim;
 int i;
 int r, g, b;
 color linecolor;
-int colorangle;
+float colorangle;
 float angle;
 float anglevel;
+float maxanglev = 90;
 
 void setup()
 {
   i = 0;
-  xdim = 700;
-  ydim = 700;
-  size(xdim, ydim);
+  xdim = 800;
+  ydim = 800;
+  size(xdim + 50, ydim + 50);
   stroke(255);
   background(0);
   
@@ -64,7 +65,7 @@ void setup()
   g = 255;
   b = 255;
   angle = 0;
-  anglevel = 10;
+  anglevel = 0;//maxanglev;
   
   linecolor = color(r, g, b);
 }
@@ -78,11 +79,11 @@ void dorotate()
     angle += 360;
     
     if (random(100) < 20) {
-        anglevel = anglevel + ((random(100) - 50) / 100.0) * 3 * PI / 180.0;
-        if (anglevel < -20 * PI / 180.0)
-          anglevel = -20 * PI / 180.0;
-        if (anglevel > 20 * PI / 180.0)
-          anglevel = 20 * PI / 180.0;
+        anglevel = anglevel + ((random(100) - 50) / 100.0) * 20 * PI / 180.0;
+        if (anglevel < -maxanglev * PI / 180.0)
+          anglevel = -maxanglev * PI / 180.0;
+        if (anglevel > maxanglev * PI / 180.0)
+          anglevel = maxanglev * PI / 180.0;
     }
 }
   
@@ -92,14 +93,18 @@ int update_color(float phase)
 
   ca = colorangle * PI / 180.0;
   
-  return ((int) (256 * sin(ca + phase))) % 256;
+  return ((int) ((sin(ca + phase) + 1.0) * 255.0)) ;
 }
+
 
 void update_linecolor()
 {
-  if (random(100) < 15)
-     colorangle = (colorangle + (int) (random(7) - 3)) % 360;
+  //if (random(100) < 15)
+    // colorangle = (colorangle + (int) (random(7) - 3)) % 360;
     
+  colorangle += 1.8;
+  if (colorangle > 360)
+    colorangle -= 360;
   r = update_color(0);
   g = update_color(2.0 * PI / 3.0);
   b = update_color(4.0 * PI / 3.0);
