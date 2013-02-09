@@ -32,13 +32,16 @@ float colorangle;
 float angle;
 float anglevel;
 float maxanglev = 90;
+int xoff, yoff;
 
 void setup()
 {
   i = 0;
-  xdim = 800;
-  ydim = 800;
-  size(xdim + 50, ydim + 50);
+  xdim = 700;
+  ydim = 700;
+  size(xdim + 700, ydim);
+  xoff = 700 / 2;
+  yoff = 0;
   stroke(255);
   background(0);
   
@@ -87,13 +90,13 @@ void dorotate()
     }
 }
   
-int update_color(float phase)
+int update_color(float phase, float factor)
 {
   float ca;
 
   ca = colorangle * PI / 180.0;
   
-  return ((int) ((sin(ca + phase) + 1.0) * 255.0)) ;
+  return ((int) ((sin(factor * ca + phase) + 1.0) * 255.0)) ;
 }
 
 
@@ -102,12 +105,12 @@ void update_linecolor()
   //if (random(100) < 15)
     // colorangle = (colorangle + (int) (random(7) - 3)) % 360;
     
-  colorangle += 1.8;
+  colorangle += 0.05;
   if (colorangle > 360)
     colorangle -= 360;
-  r = update_color(0);
-  g = update_color(2.0 * PI / 3.0);
-  b = update_color(4.0 * PI / 3.0);
+  r = update_color(0, 3.0);
+  g = update_color(2.0 * PI / 3.0, 3);
+  b = update_color(4.0 * PI / 3.0, 7);
   linecolor = color(r, g, b);
 }
 
@@ -179,7 +182,7 @@ void rotline(int x1, int y1, int x2, int y2, float a)
   a2 = xrot(x2, y2, a);
   b2 = yrot(x2, y2, a);
   
-  line(a1, b1, a2, b2);
+  line(xoff + a1, yoff + b1, xoff + a2, yoff + b2);
 }
 
 void myline(int x1, int y1, int x2, int y2, float a)
